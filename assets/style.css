@@ -143,3 +143,11 @@ input,select{background:transparent;border:0;border-bottom:1px solid currentColo
 .hero.hasvid .reel,.hero.hasvid .scrollcue{position:relative;z-index:2}
 @media(max-width:900px){.vshade{background:linear-gradient(180deg,rgba(14,36,62,.82) 0%,rgba(18,44,76,.88) 60%,rgba(10,26,46,.95) 100%)}}
 @media(prefers-reduced-motion:reduce){.herovid video{display:none}}
+/* v6 trust row */
+.trust{border-bottom:1px solid var(--line)}
+.trustin{list-style:none;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:1.5rem;padding-top:2.6rem!important;padding-bottom:2.6rem!important}
+.trustin li{display:flex;flex-direction:column;gap:.35rem;border-left:1px solid var(--gold);padding-left:1rem}
+.trustin b{font:400 clamp(1.8rem,3vw,2.4rem)/1 var(--serif);letter-spacing:-.03em;color:var(--blue)}
+.trustin span{font-size:.86rem;color:#1a1a1ab3;line-height:1.4}
+@media(max-width:900px){.trustin{grid-template-columns:repeat(2,1fr)}}
+.guidelist{list-style:none;padding:0;display:grid;gap:1.5rem}.guidelist a{font:400 1.6rem var(--serif)}.guidelist p{margin:.3rem 0 0}
