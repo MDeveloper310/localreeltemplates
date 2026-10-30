@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://localreeltemplates.com/sitemap.xml
