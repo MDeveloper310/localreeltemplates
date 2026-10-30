@@ -51,3 +51,7 @@ d.addEventListener('mouseover',e=>c.classList.toggle('hov',!!e.target.closest('a
 d.addEventListener('mouseleave',()=>c.classList.add('off'));d.addEventListener('mouseenter',()=>c.classList.remove('off'));
 const cl=()=>{rx+=(tx-rx)*.16;ry+=(ty-ry)*.16;ring.style.transform=`translate3d(${rx}px,${ry}px,0)`;requestAnimationFrame(cl)};cl();
 })();
+/* v5 hero video: pause for reduced motion, pause offscreen */
+(()=>{const v=document.getElementById('herov');if(!v)return;const mq=matchMedia('(prefers-reduced-motion: reduce)');
+const set=()=>{if(mq.matches){v.pause();v.removeAttribute('autoplay')}else{v.play&&v.play().catch(()=>{})}};mq.addEventListener?.('change',set);if(mq.matches)set();
+if('IntersectionObserver'in window)new IntersectionObserver(e=>{if(mq.matches)return;e[0].isIntersecting?v.play().catch(()=>{}):v.pause()}).observe(v)})();
