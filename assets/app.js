@@ -14,25 +14,40 @@ const hook=nm?d.hook.replace(/our|here|this place/i,m=>m+' at '+nm).replace('at 
 $('#genout').innerHTML=note+'<p class="eyebrow">Your Reel idea</p><h3>'+esc(d.title)+'</h3><p class="hookq big">“'+esc(hook)+'”</p><p>'+esc(d.How)+'</p><ol>'+d.shots.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol><p><b>Suno prompt idea:</b> '+esc(d.suno)+'</p><p><a class="btn sm" href="/formats/'+d.slug+'.html">Open the full template →</a> <button class="btn sm ghost" type="submit">Another idea</button></p>'}}
 $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent).then(()=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy prompt',1500)})});
 })();
-/* cinematic scroll layer: pinned hero zoom, letterbox, parallax, pixel dissolve. Skipped for reduced motion. */
-(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-const pin=document.getElementById('pin'),tx=document.querySelector('.herotx'),reel=document.querySelector('.reel'),bars=document.querySelectorAll('.frame i'),strip=document.querySelector('.strip');
-const wide=matchMedia('(min-width: 821px)');
-const secs=[...document.querySelectorAll('.reveal')],items=[];
-const C=s=>getComputedStyle(s).backgroundColor;
-secs.forEach(s=>{const prev=s.previousElementSibling;if(!prev)return;const cv=document.createElement('canvas');cv.className='dz';cv.setAttribute('aria-hidden','true');s.prepend(cv);
- items.push({s,cv,col:prev.id==='pin'?'#2A5D91':C(prev),seed:null,done:false})});
-const cell=()=>innerWidth<700?18:26;
-function draw(it,p){const {cv,s}=it,w=innerWidth,h=Math.min(s.offsetHeight,innerHeight*1.2),z=cell(),cols=Math.ceil(w/z),rows=Math.ceil(h/z);
- if(cv.width!==cols||cv.height!==rows||!it.seed){cv.width=cols;cv.height=rows;cv.style.height=h+'px';it.seed=new Float32Array(cols*rows);for(let i=0;i<it.seed.length;i++){const y=Math.floor(i/cols)/rows;it.seed[i]=Math.random()*.7+y*.3}}
- const x=cv.getContext('2d');x.clearRect(0,0,cols,rows);if(p>=1){it.done=true;cv.remove();return}x.fillStyle=it.col;
- for(let i=0;i<it.seed.length;i++)if(it.seed[i]>p)x.fillRect(i%cols,(i/cols)|0,1,1)}
-let tick=false;
-function frame(){tick=false;const vh=innerHeight;
- if(pin&&tx&&wide.matches){const r=pin.getBoundingClientRect(),p=Math.min(Math.max(-r.top/(r.height-vh),0),1);
-  tx.style.transform='scale('+(1+p*.35)+')';tx.style.opacity=1-Math.max(0,p-.45)*1.8;
-  bars.forEach(b=>b.style.height=(p*13)+'vh');
-  if(reel)reel.style.transform='translateY('+(-p*120)+'px) scale('+(1+p*.15)+')';if(strip)strip.style.transform='rotate(-12deg) translateX('+(-p*160)+'px)'}
- items.forEach(it=>{if(it.done)return;const r=it.s.getBoundingClientRect();const p=(vh-r.top)/(vh*.75);draw(it,Math.min(Math.max(p,0),1)*1.15)})}
-const req=()=>{if(!tick){tick=true;requestAnimationFrame(frame)}};
-addEventListener('scroll',req,{passive:true});addEventListener('resize',()=>{items.forEach(i=>i.seed=null);req()});frame()})();
+/* motion layer v4: Lenis inertia, masked line reveals, curtains, parallax, magnetic, cursor, smart nav. Content is visible without JS; reduced-motion skips all of it. */
+(()=>{const d=document,R=d.documentElement,rm=matchMedia('(prefers-reduced-motion: reduce)').matches,fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+const nav=d.querySelector('.nav');let ly=scrollY;
+const navTick=y=>{if(!nav)return;nav.classList.toggle('scrolled',y>40);if(Math.abs(y-ly)>6){nav.classList.toggle('hide',y>ly&&y>300&&!d.activeElement.closest?.('.nav'));ly=y}};
+addEventListener('scroll',()=>navTick(scrollY),{passive:true});
+if(rm)return;R.classList.add('mo');
+/* split headings into masked lines */
+const split=el=>{const walk=n=>{[...n.childNodes].forEach(c=>{if(c.nodeType===3){const f=d.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(t=>{if(!t)return;if(/^\s+$/.test(t)){f.append(' ');return}const w=d.createElement('span');w.className='w';const i=d.createElement('span');i.className='wi';i.textContent=t;w.append(i);f.append(w)});c.replaceWith(f)}else if(c.nodeType===1&&!c.classList.contains('sr'))walk(c)})};walk(el);
+ const lay=()=>{let top=null,line=-1;el.querySelectorAll('.wi').forEach(i=>{const t=i.parentNode.offsetTop;if(top===null||Math.abs(t-top)>4){line++;top=t}i.style.transitionDelay=(line*.09)+'s'})};lay();el._lay=lay};
+const sp=[...d.querySelectorAll('[data-split]')];sp.forEach(split);
+addEventListener('resize',()=>sp.forEach(e=>e._lay&&e._lay()));
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -12% 0px'});
+d.querySelectorAll('[data-split],.curtain,.reveal,.card,.steps>div,.indgrid a,.kit section').forEach(e=>io.observe(e));
+/* failsafe: never leave content hidden */
+setTimeout(()=>d.querySelectorAll('[data-split],.curtain').forEach(e=>{const r=e.getBoundingClientRect();if(r.top<innerHeight)e.classList.add('in')}),2500);
+/* Lenis inertial scroll */
+let lenis=null;
+const startLenis=()=>{if(!window.Lenis||lenis)return;lenis=new Lenis({duration:1.15,easing:t=>1-Math.pow(1-t,4),smoothWheel:true});
+ const raf=t=>{lenis.raf(t);requestAnimationFrame(raf)};requestAnimationFrame(raf);
+ d.querySelectorAll('a[href^="#"],a[href^="/#"]').forEach(a=>a.addEventListener('click',e=>{const h=a.getAttribute('href').replace(/^\//,'');if(location.pathname!=='/'&&a.getAttribute('href').startsWith('/'))return;const t=d.querySelector(h);if(t&&h.length>1){e.preventDefault();lenis.scrollTo(t,{offset:-70});history.replaceState(null,'',h)}}))};
+window.Lenis?startLenis():addEventListener('load',startLenis);
+/* parallax + marquee velocity */
+const par=[...d.querySelectorAll('[data-par]')],mt=d.querySelector('.mtrack');let mx=0,vel=0,py=scrollY,dir=1;
+const loop=()=>{const y=scrollY,dy=y-py;py=y;vel+= (dy-vel)*.1;if(dy)dir=dy>0?1:-1;
+ par.forEach(e=>{const r=e.parentNode.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;e.style.setProperty('--py',((r.top+r.height/2-innerHeight/2)*parseFloat(e.dataset.par)).toFixed(1)+'px')});
+ if(mt){mx-=(.45+Math.min(Math.abs(vel)*.12,6))*dir;const w=mt.scrollWidth/2;if(mx<-w)mx+=w;if(mx>0)mx-=w;mt.style.transform='translate3d('+mx+'px,0,0)'}
+ requestAnimationFrame(loop)};requestAnimationFrame(loop);
+if(!fine)return;
+/* magnetic buttons */
+d.querySelectorAll('.mag,.nav .btn').forEach(b=>{b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;b.style.translate=(x*.25)+'px '+(y*.35)+'px'});b.addEventListener('mouseleave',()=>{b.style.translate=''})});
+/* custom cursor: dot + lagged ring */
+const c=d.querySelector('.cur');if(!c)return;R.classList.add('hascur');const dot=c.querySelector('i'),ring=c.querySelector('b');let tx=-100,ty=-100,rx=-100,ry=-100;
+addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;dot.style.transform=`translate3d(${tx}px,${ty}px,0)`},{passive:true});
+d.addEventListener('mouseover',e=>c.classList.toggle('hov',!!e.target.closest('a,button,summary,select,input,label,.card')));
+d.addEventListener('mouseleave',()=>c.classList.add('off'));d.addEventListener('mouseenter',()=>c.classList.remove('off'));
+const cl=()=>{rx+=(tx-rx)*.16;ry+=(ty-ry)*.16;ring.style.transform=`translate3d(${rx}px,${ry}px,0)`;requestAnimationFrame(cl)};cl();
+})();
