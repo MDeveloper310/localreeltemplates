@@ -1,11 +1,13 @@
 /* v7: filters, generator, copy, sticky CTA, nav state, reveal, hero video. No dependencies. */
 (()=>{const d=document,$=s=>d.querySelector(s),$$=s=>[...d.querySelectorAll(s)];
 if($('.hero,.scrub'))d.body.classList.add('home');
-const st=$('#stickycta'),nl=$('#newsletter');let nlv=false;
+const st=$('#stickycta'),nl=$('#newsletter'),sc=$('#scrub');let nlv=false,dis=false;try{dis=localStorage.getItem('lrt_sticky_x')==='1'}catch(e){}
+if(st&&!dis)st.hidden=false;const sx=$('#stickyx');if(sx)sx.onclick=()=>{st.classList.remove('show');dis=true;try{localStorage.setItem('lrt_sticky_x','1')}catch(e){}setTimeout(()=>st.hidden=true,500)};
 if(nl&&'IntersectionObserver'in window)new IntersectionObserver(e=>{nlv=e[0].isIntersecting;tog()}).observe(nl);
-function tog(){st&&st.classList.toggle('show',scrollY>700&&!nlv)}
+const heroEnd=()=>sc?sc.offsetTop+sc.offsetHeight-innerHeight*.6:700;
+function tog(){st&&!dis&&st.classList.toggle('show',scrollY>heroEnd()&&!nlv)}
 const nav=$('.nav');let ly=scrollY;
-addEventListener('scroll',()=>{tog();const y=scrollY;if(nav){nav.classList.toggle('scrolled',y>40);if(Math.abs(y-ly)>6){nav.classList.toggle('hide',y>ly&&y>400&&!nav.contains(d.activeElement));ly=y}}},{passive:true});
+addEventListener('scroll',()=>{tog();const y=scrollY;if(nav){nav.classList.toggle('scrolled',y>40);if(Math.abs(y-ly)>8){const he=sc?sc.offsetTop+sc.offsetHeight:400;nav.classList.toggle('hide',y>ly&&y>he&&!nav.contains(d.activeElement));ly=y}}},{passive:true});
 const grid=$('#grid');if(grid){let f={ind:'',goal:'',q:''};const cards=$$('#grid .card');
 const apply=()=>{let n=0;cards.forEach(c=>{const ok=(!f.ind||c.dataset.ind.split(' ').includes(f.ind))&&(!f.goal||c.dataset.goal===f.goal)&&(!f.q||c.dataset.text.includes(f.q));c.hidden=!ok;if(ok)n++});$('#count').textContent=n+' of '+cards.length+' formats'};
 ['ind','goal'].forEach(k=>$$('.filters .chip[data-'+k+']').forEach(b=>b.onclick=()=>{$$('.filters .chip[data-'+k+']').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')});b.classList.add('on');b.setAttribute('aria-pressed','true');f[k]=b.dataset[k];apply()}));
