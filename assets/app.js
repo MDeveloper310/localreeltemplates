@@ -1,7 +1,7 @@
 /* v7: filters, generator, copy, sticky CTA, nav state, reveal, hero video. No dependencies. */
 (()=>{const d=document,$=s=>d.querySelector(s),$$=s=>[...d.querySelectorAll(s)];
-if($('.hero,.scrub'))d.body.classList.add('home');
-const st=$('#stickycta'),nl=$('#newsletter'),sc=$('#scrub');let nlv=false,dis=false;try{dis=localStorage.getItem('lrt_sticky_x')==='1'}catch(e){}
+if($('.hero,.vhero'))d.body.classList.add('home');
+const st=$('#stickycta'),nl=$('#newsletter'),sc=$('#hero');let nlv=false,dis=false;try{dis=localStorage.getItem('lrt_sticky_x')==='1'}catch(e){}
 if(st&&!dis)st.hidden=false;const sx=$('#stickyx');if(sx)sx.onclick=()=>{st.classList.remove('show');dis=true;try{localStorage.setItem('lrt_sticky_x','1')}catch(e){}setTimeout(()=>st.hidden=true,500)};
 if(nl&&'IntersectionObserver'in window)new IntersectionObserver(e=>{nlv=e[0].isIntersecting;tog()}).observe(nl);
 const heroEnd=()=>sc?sc.offsetTop+sc.offsetHeight-innerHeight*.6:700;
@@ -21,7 +21,8 @@ $('#genout').innerHTML=note+'<p class="eyebrow">Your Reel idea</p><h3>'+esc(x.ti
 $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(d.getElementById(b.dataset.copy).textContent).then(()=>{const t=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=t,1500)})});
 const rm=matchMedia('(prefers-reduced-motion: reduce)');
 if('IntersectionObserver'in window&&!rm.matches){const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -8% 0px'});$$('.reveal').forEach(e=>io.observe(e));setTimeout(()=>$$('.reveal').forEach(e=>{if(e.getBoundingClientRect().top<innerHeight)e.classList.add('in')}),2000)}else $$('.reveal').forEach(e=>e.classList.add('in'));
-const v=d.getElementById('herov');if(v){const set=()=>{if(rm.matches){v.pause();v.removeAttribute('autoplay')}else v.play&&v.play().catch(()=>{})};rm.addEventListener?.('change',set);if(rm.matches)set();
-if('IntersectionObserver'in window)new IntersectionObserver(e=>{if(rm.matches)return;e[0].isIntersecting?v.play().catch(()=>{}):v.pause()}).observe(v)}
+const v=d.getElementById('herov');if(v){const play=()=>{if(rm.matches)return;if(!v.src){v.src=innerWidth/innerHeight<0.8?v.dataset.m:v.dataset.d}const p=v.play();p&&p.catch(()=>{})};
+v.addEventListener('playing',()=>v.parentNode.classList.add('on'));rm.addEventListener?.('change',()=>rm.matches?(v.pause(),v.parentNode.classList.remove('on')):play());play();
+if('IntersectionObserver'in window)new IntersectionObserver(e=>{if(rm.matches||!v.src)return;e[0].isIntersecting?v.play().catch(()=>{}):v.pause()}).observe(v)}
 })();
 document.querySelectorAll('.nfilter').forEach(g=>g.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const n=b.dataset.n;document.querySelectorAll('[data-niches]').forEach(c=>{c.hidden=n&&!c.dataset.niches.includes(n)})}));

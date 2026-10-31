@@ -254,3 +254,20 @@ main,.foot{position:relative;z-index:2}
 a.btn,.band.dark a.btn,.feat a.btn,.foot a.btn,.spband a.btn,.notice a.btn{color:#0B0D11}a.btn.ghost,.spband a.btn.ghost,.scrub a.btn.ghostw{color:#fff}
 .scrubtx,.scrubbar,.scrub .scrollcue{z-index:3}.scrubtx{position:relative}
 .scrub::after{display:none}.scrub .vshade{background:linear-gradient(180deg,#0b0d1199 0,#0b0d1100 28%,#0b0d1100 42%,#0b0d11f2 92%,var(--bg) 100%)}
+/* v15 autoplay loop hero */
+.vhero{position:relative;height:100vh;height:100svh;min-height:560px;display:flex;align-items:flex-end;color:#fff;background:var(--bg);overflow:hidden;padding:0 0 clamp(4rem,10vh,7rem)}
+.vbg,.vbg picture,.vposter,.vbg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vbg video{opacity:0;transition:opacity .8s ease}.vbg.on video{opacity:1}
+.vhero .vshade{position:absolute;inset:0;background:linear-gradient(180deg,#0b0d1180 0,#0b0d1100 26%,#0b0d1122 50%,#0b0d11e6 88%,var(--bg) 100%),linear-gradient(90deg,#0b0d1199,#0b0d1100 60%)}
+.vtx{position:relative;z-index:2;width:100%}
+.vhero h1{font-size:clamp(2.6rem,7.5vw,5.8rem);line-height:1.02;max-width:12ch;margin:0 0 1rem;text-shadow:0 2px 30px #0008}
+.vhero h1 em{color:var(--gold)}.vhero .lede{color:#E9ECF1;max-width:52ch}
+.vhero .pill{display:inline-flex;max-width:calc(100vw - 2.5rem);white-space:nowrap;overflow:hidden;background:#0b0d11b8;box-shadow:inset 0 0 0 1px #ffffff26;backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);color:#fff;padding:.45rem .9rem .45rem .7rem}
+.vhero .pill a{overflow:hidden;text-overflow:ellipsis;color:#fff}
+.vhero a.btn{background:#fff;color:#0B0D11}.vhero a.btn:hover{background:var(--gold)}
+.vhero a.btn.ghostw{background:#ffffff14;color:#fff;border:1px solid #ffffff55;backdrop-filter:blur(8px)}.vhero a.btn.ghostw:hover{background:#fff;color:#0B0D11}
+.vhero .scrollcue{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);z-index:2}
+.vtx>*{animation:vin 1s var(--ease) both}.vtx>h1{animation-delay:.12s}.vtx>.lede{animation-delay:.24s}.vtx>.ctas{animation-delay:.36s}
+@keyframes vin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.vbg video{display:none}.vtx>*{animation:none}}
+.vhero .lede{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;text-shadow:0 1px 16px #000a}
