@@ -22,3 +22,4 @@ if('IntersectionObserver'in window&&!rm.matches){const io=new IntersectionObserv
 const v=d.getElementById('herov');if(v){const set=()=>{if(rm.matches){v.pause();v.removeAttribute('autoplay')}else v.play&&v.play().catch(()=>{})};rm.addEventListener?.('change',set);if(rm.matches)set();
 if('IntersectionObserver'in window)new IntersectionObserver(e=>{if(rm.matches)return;e[0].isIntersecting?v.play().catch(()=>{}):v.pause()}).observe(v)}
 })();
+document.querySelectorAll('.nfilter').forEach(g=>g.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const n=b.dataset.n;document.querySelectorAll('[data-niches]').forEach(c=>{c.hidden=n&&!c.dataset.niches.includes(n)})}));
