@@ -271,3 +271,5 @@ a.btn,.band.dark a.btn,.feat a.btn,.foot a.btn,.spband a.btn,.notice a.btn{color
 @keyframes vin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.vbg video{display:none}.vtx>*{animation:none}}
 .vhero .lede{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;text-shadow:0 1px 16px #000a}
+/* v16: video always visible above poster; no reduced-motion gate */
+.vbg video,.vbg.on video{opacity:1!important;display:block!important;z-index:1}.vbg picture{z-index:0}.vhero .vshade{z-index:2}

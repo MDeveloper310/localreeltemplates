@@ -21,8 +21,17 @@ $('#genout').innerHTML=note+'<p class="eyebrow">Your Reel idea</p><h3>'+esc(x.ti
 $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(d.getElementById(b.dataset.copy).textContent).then(()=>{const t=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=t,1500)})});
 const rm=matchMedia('(prefers-reduced-motion: reduce)');
 if('IntersectionObserver'in window&&!rm.matches){const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -8% 0px'});$$('.reveal').forEach(e=>io.observe(e));setTimeout(()=>$$('.reveal').forEach(e=>{if(e.getBoundingClientRect().top<innerHeight)e.classList.add('in')}),2000)}else $$('.reveal').forEach(e=>e.classList.add('in'));
-const v=d.getElementById('herov');if(v){const play=()=>{if(rm.matches)return;if(!v.src){v.src=innerWidth/innerHeight<0.8?v.dataset.m:v.dataset.d}const p=v.play();p&&p.catch(()=>{})};
-v.addEventListener('playing',()=>v.parentNode.classList.add('on'));rm.addEventListener?.('change',()=>rm.matches?(v.pause(),v.parentNode.classList.remove('on')):play());play();
-if('IntersectionObserver'in window)new IntersectionObserver(e=>{if(rm.matches||!v.src)return;e[0].isIntersecting?v.play().catch(()=>{}):v.pause()}).observe(v)}
+const v=d.getElementById('herov');if(v){
+const port=innerWidth/innerHeight<0.8;if(port&&!/hero-m/.test(v.currentSrc||'')){v.src='/assets/herov/hero-m.mp4'}
+v.muted=true;v.defaultMuted=true;v.setAttribute('muted','');v.playsInline=true;
+let tries=0;const play=()=>{if(!v.paused)return;v.muted=true;const p=v.play();p&&p.catch(()=>{if(++tries<20)setTimeout(play,400)})};
+['loadedmetadata','loadeddata','canplay','canplaythrough','pause','stalled'].forEach(e=>v.addEventListener(e,()=>{if(e!=='pause'||!d.hidden)play()}));
+v.addEventListener('ended',()=>{v.currentTime=0;play()});
+v.addEventListener('playing',()=>v.parentNode.classList.add('on'));
+v.addEventListener('error',()=>{if(port&&!/m720/.test(v.src)){v.src='/assets/herov/hero-m720.mp4';v.load();play()}});
+if(port)setTimeout(()=>{if(v.readyState<3&&!/m720/.test(v.src)){v.src='/assets/herov/hero-m720.mp4';v.load();play()}},6000);
+d.addEventListener('visibilitychange',()=>{if(!d.hidden)play()});addEventListener('pageshow',play);addEventListener('load',play);
+['touchstart','pointerdown','click','scroll','keydown'].forEach(e=>addEventListener(e,play,{passive:true}));
+play()}
 })();
 document.querySelectorAll('.nfilter').forEach(g=>g.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const n=b.dataset.n;document.querySelectorAll('[data-niches]').forEach(c=>{c.hidden=n&&!c.dataset.niches.includes(n)})}));
