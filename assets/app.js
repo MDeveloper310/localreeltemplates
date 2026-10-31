@@ -1,6 +1,6 @@
 /* v7: filters, generator, copy, sticky CTA, nav state, reveal, hero video. No dependencies. */
 (()=>{const d=document,$=s=>d.querySelector(s),$$=s=>[...d.querySelectorAll(s)];
-if($('.hero'))d.body.classList.add('home');
+if($('.hero,.scrub'))d.body.classList.add('home');
 const st=$('#stickycta'),nl=$('#newsletter');let nlv=false;
 if(nl&&'IntersectionObserver'in window)new IntersectionObserver(e=>{nlv=e[0].isIntersecting;tog()}).observe(nl);
 function tog(){st&&st.classList.toggle('show',scrollY>700&&!nlv)}
